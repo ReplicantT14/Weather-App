@@ -1,0 +1,125 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Main.gd" type="Script" id=1]
+[ext_resource path="res://CurrentWeather.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Moving.gd" type="Script" id=3]
+[ext_resource path="res://Font.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Theme.tres" type="Theme" id=5]
+
+[node name="Main" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="MovingBackground" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.219608, 0.219608, 0.219608, 0.647059 )
+
+[node name="Content" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CurrentWeather" parent="Content" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 144.0
+margin_right = 880.0
+margin_bottom = 170.0
+rect_min_size = Vector2( 0, 170 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content"]
+margin_top = 174.0
+margin_right = 1024.0
+margin_bottom = 374.0
+rect_min_size = Vector2( 0, 200 )
+scroll_vertical_enabled = false
+
+[node name="Hourly" type="HBoxContainer" parent="Content/ScrollContainer"]
+theme = ExtResource( 5 )
+custom_constants/separation = 210
+
+[node name="Daily" type="HBoxContainer" parent="Content"]
+margin_top = 378.0
+margin_right = 1024.0
+margin_bottom = 548.0
+rect_min_size = Vector2( 0, 170 )
+custom_constants/separation = 210
+
+[node name="Moving" type="Control" parent="."]
+anchor_right = 1.0
+margin_bottom = 160.0
+mouse_filter = 1
+script = ExtResource( 3 )
+
+[node name="MovingArea" type="ColorRect" parent="Moving"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.352941, 0.352941, 0.352941, 0.92549 )
+
+[node name="Label" type="Label" parent="Moving/MovingArea"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -274.5
+margin_top = -19.5
+margin_right = 274.5
+margin_bottom = 19.5
+custom_fonts/font = ExtResource( 4 )
+text = "Drag on this area to move the window"
+
+[node name="Options" type="PopupMenu" parent="."]
+margin_right = 20.0
+margin_bottom = 20.0
+
+[node name="CurrentAndHourlyTimer" type="Timer" parent="."]
+wait_time = 3600.0
+
+[node name="DailyTimer" type="Timer" parent="."]
+wait_time = 43201.0
+
+[node name="ScrollingArea" type="ColorRect" parent="."]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -118.0
+margin_bottom = 83.0
+color = Color( 0.352941, 0.352941, 0.352941, 0.92549 )
+
+[node name="Label" type="Label" parent="ScrollingArea"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -185.5
+margin_top = -19.5
+margin_right = 185.5
+margin_bottom = 19.5
+custom_fonts/font = ExtResource( 4 )
+text = "Scroll here to see the rest"
+
+[node name="LineEdit" type="LineEdit" parent="."]
+margin_left = 234.0
+margin_top = 314.0
+margin_right = 792.0
+margin_bottom = 372.0
+custom_fonts/font = ExtResource( 4 )
+
+[node name="Label" type="Label" parent="LineEdit"]
+margin_left = 9.0
+margin_top = -50.0
+margin_right = 559.0
+margin_bottom = -11.0
+theme = ExtResource( 5 )
+text = "Please put you API key in the textbox"
+
+[node name="HideHints" type="Timer" parent="."]
+wait_time = 3.5
+one_shot = true
+
+[connection signal="gui_input" from="Moving" to="Moving" method="_on_Moving_gui_input"]
+[connection signal="id_pressed" from="Options" to="." method="_on_Options_id_pressed"]
+[connection signal="timeout" from="CurrentAndHourlyTimer" to="." method="_on_CurrentAndHourlyTimer_timeout"]
+[connection signal="timeout" from="DailyTimer" to="." method="_on_DailyTimer_timeout"]
+[connection signal="timeout" from="HideHints" to="." method="_on_HideHints_timeout"]

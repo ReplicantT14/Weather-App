@@ -1,0 +1,110 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Theme.tres" type="Theme" id=1]
+[ext_resource path="res://CurrentWeather.gd" type="Script" id=2]
+[ext_resource path="res://icon.png" type="Texture" id=3]
+
+[sub_resource type="DynamicFontData" id=5]
+font_path = "res://Font/ArmataHairline-J1Vx.otf"
+
+[sub_resource type="DynamicFont" id=6]
+size = 70
+use_filter = true
+font_data = SubResource( 5 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 40
+use_filter = true
+font_data = SubResource( 5 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 60
+use_filter = true
+font_data = SubResource( 5 )
+
+[node name="CurrentWeather" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource( 2 )
+
+[node name="AllElements" type="HBoxContainer" parent="."]
+margin_left = 144.0
+margin_top = 228.0
+margin_right = 880.0
+margin_bottom = 372.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginTime" type="MarginContainer" parent="AllElements"]
+margin_right = 300.0
+margin_bottom = 144.0
+mouse_filter = 1
+
+[node name="TimeContainer" type="VBoxContainer" parent="AllElements/MarginTime"]
+margin_right = 300.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="Time" type="Label" parent="AllElements/MarginTime/TimeContainer"]
+margin_right = 300.0
+margin_bottom = 89.0
+custom_fonts/font = SubResource( 6 )
+text = "00:00"
+align = 2
+
+[node name="Date" type="Label" parent="AllElements/MarginTime/TimeContainer"]
+margin_top = 93.0
+margin_right = 300.0
+margin_bottom = 144.0
+custom_fonts/font = SubResource( 7 )
+text = "november 29"
+align = 2
+
+[node name="MarginIcon" type="MarginContainer" parent="AllElements"]
+margin_left = 304.0
+margin_right = 432.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 128, 0 )
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 5
+
+[node name="Icon" type="TextureRect" parent="AllElements/MarginIcon"]
+margin_right = 128.0
+margin_bottom = 144.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
+[node name="MarginWeather" type="MarginContainer" parent="AllElements"]
+margin_left = 436.0
+margin_top = 12.0
+margin_right = 736.0
+margin_bottom = 132.0
+mouse_filter = 1
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="WeatherContainer" type="VBoxContainer" parent="AllElements/MarginWeather"]
+margin_right = 300.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="CurrTemp" type="Label" parent="AllElements/MarginWeather/WeatherContainer"]
+margin_right = 300.0
+margin_bottom = 77.0
+custom_fonts/font = SubResource( 8 )
+text = "temp"
+
+[node name="BodyTemp" type="Label" parent="AllElements/MarginWeather/WeatherContainer"]
+margin_top = 81.0
+margin_right = 300.0
+margin_bottom = 120.0
+theme = ExtResource( 1 )
+text = "temp"

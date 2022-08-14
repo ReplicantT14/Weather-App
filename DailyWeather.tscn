@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Theme.tres" type="Theme" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://DailyWeather.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFontData" id=5]
+font_path = "res://Font/ArmataHairline-J1Vx.otf"
+
+[sub_resource type="DynamicFont" id=6]
+size = 28
+use_filter = true
+font_data = SubResource( 5 )
+
+[node name="DailyWeather" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
+
+[node name="AllMargin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="AllContent" type="VBoxContainer" parent="AllMargin"]
+margin_left = 451.0
+margin_top = 234.0
+margin_right = 572.0
+margin_bottom = 365.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="DayMargin" type="MarginContainer" parent="AllMargin/AllContent"]
+margin_left = 17.0
+margin_right = 103.0
+margin_bottom = 30.0
+size_flags_horizontal = 4
+
+[node name="Day" type="Label" parent="AllMargin/AllContent/DayMargin"]
+margin_right = 86.0
+margin_bottom = 30.0
+text = "Monday"
+
+[node name="IconMargin" type="MarginContainer" parent="AllMargin/AllContent"]
+margin_left = 28.0
+margin_top = 34.0
+margin_right = 92.0
+margin_bottom = 98.0
+size_flags_horizontal = 4
+
+[node name="Icon" type="TextureRect" parent="AllMargin/AllContent/IconMargin"]
+margin_right = 64.0
+margin_bottom = 64.0
+texture = ExtResource( 2 )
+stretch_mode = 4
+
+[node name="TempMargin" type="MarginContainer" parent="AllMargin/AllContent"]
+margin_top = 102.0
+margin_right = 121.0
+margin_bottom = 131.0
+size_flags_horizontal = 4
+
+[node name="Temp" type="Label" parent="AllMargin/AllContent/TempMargin"]
+margin_right = 121.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 6 )
+text = "temp | temp"

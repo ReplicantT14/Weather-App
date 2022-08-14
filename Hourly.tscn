@@ -1,0 +1,80 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Theme.tres" type="Theme" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://Hourly.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFontData" id=5]
+font_path = "res://Font/ArmataHairline-J1Vx.otf"
+
+[sub_resource type="DynamicFont" id=7]
+size = 40
+use_filter = true
+font_data = SubResource( 5 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 30
+use_filter = true
+font_data = SubResource( 5 )
+
+[node name="Hourly" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+script = ExtResource( 3 )
+
+[node name="AllElements" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 35.0
+mouse_filter = 1
+
+[node name="AllElements" type="VBoxContainer" parent="AllElements"]
+margin_left = 446.0
+margin_top = 211.0
+margin_right = 578.0
+margin_bottom = 353.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TimeMargin" type="MarginContainer" parent="AllElements/AllElements"]
+margin_right = 132.0
+margin_bottom = 40.0
+mouse_filter = 1
+
+[node name="Time" type="Label" parent="AllElements/AllElements/TimeMargin"]
+margin_left = 21.0
+margin_right = 111.0
+margin_bottom = 40.0
+size_flags_horizontal = 4
+theme = ExtResource( 1 )
+custom_fonts/font = SubResource( 7 )
+text = "00:00"
+
+[node name="IconMargin" type="MarginContainer" parent="AllElements/AllElements"]
+margin_top = 44.0
+margin_right = 132.0
+margin_bottom = 108.0
+mouse_filter = 1
+
+[node name="Icon" type="TextureRect" parent="AllElements/AllElements/IconMargin"]
+margin_left = 34.0
+margin_right = 98.0
+margin_bottom = 64.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource( 2 )
+stretch_mode = 4
+
+[node name="TempMargin" type="MarginContainer" parent="AllElements/AllElements"]
+margin_top = 112.0
+margin_right = 132.0
+margin_bottom = 142.0
+mouse_filter = 1
+
+[node name="Temp" type="Label" parent="AllElements/AllElements/TempMargin"]
+margin_right = 132.0
+margin_bottom = 30.0
+theme = ExtResource( 1 )
+custom_fonts/font = SubResource( 8 )
+text = "temp | temp"
