@@ -75,6 +75,7 @@ func _process(_delta):
 			$HideHints.start()
 			$Moving/MovingArea.visible = true
 			$ScrollingArea.visible = true
+			save_settings()
 	
 	else:
 		$Content/ScrollContainer.visible = showHourly
@@ -188,72 +189,105 @@ func accuweather_daily():
 #parsing the body of the response as json
 func current_weather_api(_result, _response_code, _headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
-	var apiResult = json.result[0]
-	$Content/CurrentWeather.currentTemp = str(int(apiResult["Temperature"]["Metric"]["Value"]))
-	$Content/CurrentWeather.bodyTemp = str(int(apiResult["RealFeelTemperature"]["Metric"]["Value"]))
-	#geting the name and path of the correct weather icon to show
-	var iconPath = "res://Icons/" + str(apiResult["WeatherIcon"]) + "-s.png"
-	#loading the weather icon
-	var icon = load(iconPath)
-	$Content/CurrentWeather.weatherIcon = icon
+	#check if the returned result is valid
+	if (typeof(json.result) == TYPE_DICTIONARY):
+		var message = Label.new()
+		get_node(".").add_child(message)
+		if ("The allowed number" in str(json.result)):
+			message.text = "You have exceeded the number of free daily API calls"
+		else:
+			message.text = "Your API is wrong"
+		message.set_global_position(Vector2(300, 170))
+		yield(get_tree().create_timer(7), "timeout")
+		get_tree().quit()
+	else:
+		var apiResult = json.result[0]
+		$Content/CurrentWeather.currentTemp = str(int(apiResult["Temperature"]["Metric"]["Value"]))
+		$Content/CurrentWeather.bodyTemp = str(int(apiResult["RealFeelTemperature"]["Metric"]["Value"]))
+		#geting the name and path of the correct weather icon to show
+		var iconPath = "res://Icons/" + str(apiResult["WeatherIcon"]) + "-s.png"
+		#loading the weather icon
+		var icon = load(iconPath)
+		$Content/CurrentWeather.weatherIcon = icon
 
 func hourly_weather_api(_result, _response_code, _headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	#scrollHbox var is used as a parent node later to create children hourly nodes to
 	var scrollHbox = get_node("Content/ScrollContainer/Hourly")
-	#there is weather for the next 12 hours given for free through the AccuWeather API
-	#each loop is for 1 hour
-	for x in 12:
-		var apiResult = json.result[x]
-		#hourly is an instance of the preloaded scene Hourly and than added as a child
-		var hourly = Hourly.instance()
-		scrollHbox.add_child(hourly)
-		hourly.temp = str(int(apiResult["Temperature"]["Value"]))
-		hourly.bodyTemp = str(int(apiResult["RealFeelTemperature"]["Value"]))
-		var iconPath = "res://Icons/" + str(apiResult["WeatherIcon"]) + "-s.png"
-		var icon = load(iconPath)
-		hourly.weatherIcon = icon
-		var time = apiResult["DateTime"]
-		#the DateTime key in the json file contains more than just the time
-		#with the substr I am just taking the time portion of the whole value
-		hourly.time = time.substr(11, 5)
+	#check if the returned result is valid
+	if (typeof(json.result) == TYPE_DICTIONARY):
+		var message = Label.new()
+		get_node(".").add_child(message)
+		if ("The allowed number" in str(json.result)):
+			message.text = "You have exceeded the number of free daily API calls"
+		else:
+			message.text = "Your API is wrong"
+		message.set_global_position(Vector2(300, 270))
+		yield(get_tree().create_timer(7), "timeout")
+		get_tree().quit()
+	else:
+		#there is weather for the next 12 hours given for free through the AccuWeather API
+		#each loop is for 1 hour
+		for x in 12:
+			var apiResult = json.result[x]
+			#hourly is an instance of the preloaded scene Hourly and than added as a child
+			var hourly = Hourly.instance()
+			scrollHbox.add_child(hourly)
+			hourly.temp = str(int(apiResult["Temperature"]["Value"]))
+			hourly.bodyTemp = str(int(apiResult["RealFeelTemperature"]["Value"]))
+			var iconPath = "res://Icons/" + str(apiResult["WeatherIcon"]) + "-s.png"
+			var icon = load(iconPath)
+			hourly.weatherIcon = icon
+			var time = apiResult["DateTime"]
+			#the DateTime key in the json file contains more than just the time
+			#with the substr I am just taking the time portion of the whole value
+			hourly.time = time.substr(11, 5)
 
 #the same from hourly_weather_api applies here
 func daily_weather_api(_result, _response_code, _headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
-	var HBox = get_node("Content/Daily")
-	var result = json.result["DailyForecasts"]
-	for x in range(5):
-		var apiResult = result[x]
-		var day
-		var daily = Daily.instance()
-		HBox.add_child(daily)
-		var dayInt = OS.get_datetime()["weekday"]
-		dayInt += x
-		if (dayInt >= 7):
-			var remainder = dayInt - 7
-			dayInt = 0 + remainder
-		match (dayInt):
-			0:
-				day = "Monday"
-			1:
-				day = "Tuesday"
-			2:
-				day = "Wednesday"
-			3:
-				day = "Thursday"
-			4:
-				day = "Friday"
-			5:
-				day = "Saturday"
-			6:
-				day = "Sunday"
-		daily.day = day
-		var iconPath = "res://Icons/" + str(apiResult["Day"]["Icon"]) + "-s.png"
-		var icon = load(iconPath)
-		daily.weatherIcon = icon
-		daily.minTemp = str(int(apiResult["Temperature"]["Minimum"]["Value"]))
-		daily.maxTemp = str(int(apiResult["Temperature"]["Maximum"]["Value"]))
+	#check if the returned result is valid
+	if ("The allowed number" in str(json.result) || "Unauthorized" in str(json.result)):
+		var message = Label.new()
+		get_node(".").add_child(message)
+		message.text = "Check your API and AccuWeather App diagnostics"
+		message.set_global_position(Vector2(300, 370))
+		yield(get_tree().create_timer(7), "timeout")
+		get_tree().quit()
+	else:
+		var HBox = get_node("Content/Daily")
+		var result = json.result["DailyForecasts"]
+		for x in range(5):
+			var apiResult = result[x]
+			var day
+			var daily = Daily.instance()
+			HBox.add_child(daily)
+			var dayInt = OS.get_datetime()["weekday"]
+			dayInt += x
+			if (dayInt >= 7):
+				var remainder = dayInt - 7
+				dayInt = 0 + remainder
+			match (dayInt):
+				0:
+					day = "Monday"
+				1:
+					day = "Tuesday"
+				2:
+					day = "Wednesday"
+				3:
+					day = "Thursday"
+				4:
+					day = "Friday"
+				5:
+					day = "Saturday"
+				6:
+					day = "Sunday"
+			daily.day = day
+			var iconPath = "res://Icons/" + str(apiResult["Day"]["Icon"]) + "-s.png"
+			var icon = load(iconPath)
+			daily.weatherIcon = icon
+			daily.minTemp = str(int(apiResult["Temperature"]["Minimum"]["Value"]))
+			daily.maxTemp = str(int(apiResult["Temperature"]["Maximum"]["Value"]))
 
 #when an item from the context menu is clicked, it's ID is parsed here
 func _on_Options_id_pressed(id):
@@ -268,13 +302,7 @@ func _on_Options_id_pressed(id):
 			#when the QUIT button is clicked, the options.dat file is deleted and new one created with new data
 			var dir = Directory.new()
 			dir.remove("res://options.dat")
-			var file = File.new()
-			file.open("res://options.dat", File.WRITE)
-			if (file.is_open()):
-				file.store_line(API)
-				file.store_line(str(int(showHourly)))
-				file.store_line(str(int(showDaily)))
-				file.close()
+			save_settings()
 			get_tree().quit()
 
 #timeout event that happens every hour (3600 seconds)
@@ -294,3 +322,12 @@ func _on_HideHints_timeout():
 func _on_DailyTimer_timeout():
 	create_daily_weather_nodes()
 	$DailyTimer.start()
+
+func save_settings():
+	var file = File.new()
+	file.open("res://options.dat", File.WRITE)
+	if (file.is_open()):
+		file.store_line(API)
+		file.store_line(str(int(showHourly)))
+		file.store_line(str(int(showDaily)))
+		file.close()
