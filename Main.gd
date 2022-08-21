@@ -27,14 +27,7 @@ var API = null
 func _ready():
 	#setting the visibility of main nodes and transparency of the whole windows
 	get_tree().get_root().set_transparent_background(true)
-	$Content/ScrollContainer.visible = showHourly
-	$Content/Daily.visible = showDaily
-	$MovingBackground.hide()
-	$Content/ScrollContainer.get_h_scrollbar().rect_scale.x = 0
-	$Content.visible = false
-	$LineEdit.visible = false
-	$Moving/MovingArea.visible = false
-	$ScrollingArea.visible = false
+	beginning()
 	
 	#checking if the options file exists and reading 
 	var file = File.new()
@@ -195,11 +188,13 @@ func current_weather_api(_result, _response_code, _headers, body):
 		get_node(".").add_child(message)
 		if ("The allowed number" in str(json.result)):
 			message.text = "You have exceeded the number of free daily API calls"
+			message.set_global_position(Vector2(300, 170))
+			yield(get_tree().create_timer(7), "timeout")
+			get_tree().quit()
 		else:
-			message.text = "Your API is wrong"
-		message.set_global_position(Vector2(300, 170))
-		yield(get_tree().create_timer(7), "timeout")
-		get_tree().quit()
+			API = null
+			beginning()
+			$LineEdit.visible = true
 	else:
 		var apiResult = json.result[0]
 		$Content/CurrentWeather.currentTemp = str(int(apiResult["Temperature"]["Metric"]["Value"]))
@@ -220,11 +215,9 @@ func hourly_weather_api(_result, _response_code, _headers, body):
 		get_node(".").add_child(message)
 		if ("The allowed number" in str(json.result)):
 			message.text = "You have exceeded the number of free daily API calls"
-		else:
-			message.text = "Your API is wrong"
-		message.set_global_position(Vector2(300, 270))
-		yield(get_tree().create_timer(7), "timeout")
-		get_tree().quit()
+			message.set_global_position(Vector2(300, 270))
+			yield(get_tree().create_timer(7), "timeout")
+			get_tree().quit()
 	else:
 		#there is weather for the next 12 hours given for free through the AccuWeather API
 		#each loop is for 1 hour
@@ -247,13 +240,15 @@ func hourly_weather_api(_result, _response_code, _headers, body):
 func daily_weather_api(_result, _response_code, _headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	#check if the returned result is valid
-	if ("The allowed number" in str(json.result) || "Unauthorized" in str(json.result)):
+	if ("The allowed number" in str(json.result)):
 		var message = Label.new()
 		get_node(".").add_child(message)
-		message.text = "Check your API and AccuWeather App diagnostics"
+		message.text = "Check your AccuWeather App diagnostics"
 		message.set_global_position(Vector2(300, 370))
 		yield(get_tree().create_timer(7), "timeout")
 		get_tree().quit()
+	elif("Unauthorized" in str(json.result)):
+		pass
 	else:
 		var HBox = get_node("Content/Daily")
 		var result = json.result["DailyForecasts"]
@@ -331,3 +326,13 @@ func save_settings():
 		file.store_line(str(int(showHourly)))
 		file.store_line(str(int(showDaily)))
 		file.close()
+
+func beginning():
+	$Content/ScrollContainer.visible = showHourly
+	$Content/Daily.visible = showDaily
+	$MovingBackground.hide()
+	$Content/ScrollContainer.get_h_scrollbar().rect_scale.x = 0
+	$Content.visible = false
+	$LineEdit.visible = false
+	$Moving/MovingArea.visible = false
+	$ScrollingArea.visible = false
